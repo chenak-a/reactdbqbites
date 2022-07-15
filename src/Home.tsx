@@ -5,6 +5,19 @@ query{
     Allcrypto
 }
 `;
+const cyptoData = `
+query ($name: String!) {
+    crypto(name: $name){
+      name
+      time
+      data{
+        hcl{
+          Close
+        }
+      }
+    }
+  }
+`;
 interface HomeProps {
 
 }
@@ -59,11 +72,12 @@ class Home extends Component<HomeProps,HomeState> {
       
     }
     async Getdata(){
-        console.log(this.state.AllCrypto)
-    }
+        this.state.AllCrypto.forEach(ctypto => client.query(cyptoData,{name : ctypto}).toPromise().then(result => {console.log(result.data.crypto.data[0].hcl.Close)})  )
+        
+}
     render() {
         this.Getdata();
-        
+
         return (
             <div>
                 "aa"
