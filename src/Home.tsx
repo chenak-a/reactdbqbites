@@ -1,4 +1,4 @@
-import  { useEffect ,useState} from 'react';
+import  React,{ useEffect ,useState} from 'react';
 import "./Home.css";
 import {
     List,
@@ -32,19 +32,20 @@ function Home() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
         setFilter(e.target.value)
-        const regex = new RegExp("^"+e.target.value, 'gi');
-        setDatavisible(dataFragment.filter(value => value.match(regex) ))
+        filterdata()
 
+    }
+    const filterdata = () => {
+        const regex = new RegExp("^"+filter, 'gi');
+        setDatavisible(dataFragment.filter(value => value.match(regex) ))
     }
     useEffect(() => {
         if (fetching) return;
         if( data){
             setDataFragment(data.Allcrypto)
-          
+            filterdata()
         }
-        if(filter.length ===0){
-            setDatavisible(data.Allcrypto)
-        }
+        
        
 
         // Set up to refetch in one second, if the query is idle
@@ -79,7 +80,6 @@ function Home() {
                 className="SE"
                 placeholder="Search"
                 onChange={handleChange}
-             
               />
             </div>
             <List
