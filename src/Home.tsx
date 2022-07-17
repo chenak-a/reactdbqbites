@@ -20,6 +20,8 @@ query{
  
 function Home() {
     const [dataFragment, setDataFragment] = useState<string[]>([]);
+    const [datavisible, setDatavisible] = useState<string[]>([]);
+    const [filter,setFilter] =  useState<string>("");
     
     const [result, reexecuteQuery] = useQuery({
         query: QueryAllcrypto,
@@ -27,11 +29,23 @@ function Home() {
       });
     const { data, fetching } = result;
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault()
+        setFilter(e.target.value)
+        const regex = new RegExp("^"+e.target.value, 'gi');
+        setDatavisible(dataFragment.filter(value => value.match(regex) ))
+
+    }
     useEffect(() => {
         if (fetching) return;
-        if( JSON.stringify(data.Allcrypto) !== JSON.stringify(dataFragment)){
+        if( data){
             setDataFragment(data.Allcrypto)
+          
         }
+        if(filter.length ===0){
+            setDatavisible(data.Allcrypto)
+        }
+       
 
         // Set up to refetch in one second, if the query is idle
         const timerId = setTimeout(() => {
@@ -40,6 +54,12 @@ function Home() {
     
         return () => clearTimeout(timerId);
       }, [fetching, reexecuteQuery]);
+      
+
+
+
+
+
     
 
     return (
@@ -58,13 +78,14 @@ function Home() {
               <Input
                 className="SE"
                 placeholder="Search"
+                onChange={handleChange}
              
               />
             </div>
             <List
             
              
-            >{ dataFragment ? dataFragment.map(cyptoname => (<Cryptoli key={cyptoname} name={cyptoname} />)):<p>b</p>}</List>
+            >{ datavisible ? datavisible.map(cyptoname => (<Cryptoli key={cyptoname} name={cyptoname} />)):<p>b</p>}</List>
             </div>
           </div>
         </div>

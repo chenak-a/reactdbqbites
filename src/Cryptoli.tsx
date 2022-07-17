@@ -50,21 +50,23 @@ function Cryptoli(props :any) {
     
     const { data, fetching } = result;
     useEffect(() => {
-        if (fetching) return;
-      
-        var newvalue: datafragment = {
-            name: data.crypto.name,
-            time: data.crypto.time,
-            projection: data.crypto.projection,
-            price: data.crypto.data[result.data.crypto.data.length-1].hcl.Close,
-            gainlose: {
-              M: data.crypto.gainlose.M,
-              W: data.crypto.gainlose.W,
-              D: data.crypto.gainlose.D,
-            },}
-        prevCountRef.current = newvalue      
-        setItem(newvalue )
-        setLoding(false)
+        if (fetching ) return;
+        if(data !== null){
+            var newvalue: datafragment = {
+                name: data.crypto.name,
+                time: data.crypto.time,
+                projection: data.crypto.projection,
+                price: data.crypto.data[result.data.crypto.data.length-1].hcl.Close,
+                gainlose: {
+                  M: data.crypto.gainlose.M,
+                  W: data.crypto.gainlose.W,
+                  D: data.crypto.gainlose.D,
+                },}
+            prevCountRef.current = newvalue      
+            setItem(newvalue )
+            setLoding(false)
+        }
+        
         
 
         // Set up to refetch in one second, if the query is idle
@@ -73,7 +75,7 @@ function Cryptoli(props :any) {
         }, 1000);
     
         return () => clearTimeout(timerId);
-      }, [fetching, reexecuteQuery]);
+      }, [fetching, reexecuteQuery,props.name]);
 
    
     return ( item   ? 
