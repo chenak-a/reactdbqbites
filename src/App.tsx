@@ -1,13 +1,9 @@
-import './App.css';
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-
-} from "react-router-dom";
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Provider } from "urql";
 import { client } from "./urqlClient";
-import Home from './Home';
+
+import Home from "./Home";
 
 function App() {
   //<Route path="/:id" exact component={itimes} />
@@ -16,11 +12,10 @@ function App() {
       <Provider value={client}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={ <Home />} />
-
+            <Route path="/" element={<Home />} />
           </Routes>
-      </BrowserRouter>
-    </Provider>
+        </BrowserRouter>
+      </Provider>
     </div>
   );
 }

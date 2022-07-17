@@ -1,89 +1,75 @@
-import  { Component } from "react";
-import { client } from "./urqlClient";
+import  { useEffect ,useState} from 'react';
+import "./Home.css";
+import {
+    List,
+    Input,
+  } from "antd";
+import "antd/dist/antd.css";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+
+import { useQuery } from 'urql';
+
+import Cryptoli from './Cryptoli';
 const QueryAllcrypto = `
 query{
     Allcrypto
 }
 `;
-const cyptoData = `
-query ($name: String!) {
-    crypto(name: $name){
-      name
-      time
-      data{
-        hcl{
-          Close
-        }
-      }
-    }
-  }
-`;
-interface HomeProps {
 
-}
-interface HomeState {
-    AllCrypto : String[],
-    datafragment :{
-        name : string,
-        time:string,
-        projection: Number,
-        gainlose : {
-            M:Number,
-            W :Number,
-            D:Number
-        }
-    }
-
-}
-class Home extends Component<HomeProps,HomeState> {
-    constructor(props :any) {
-        super(props);
-        this.state = { 
-        AllCrypto : [],
-        datafragment :{
-            name :"",
-            time:"",
-            projection: 0.0,
-            gainlose : {
-                M:0.0,
-                W :0.0,
-                D:0.0
-            }
-        }
-      
-        };
-
+ 
+function Home() {
+    const [dataFragment, setDataFragment] = useState<string[]>([]);
+    
+    const [result, reexecuteQuery] = useQuery({
+        query: QueryAllcrypto,
        
-      
-    }
-    componentDidMount(){
-        this.main()
-        
-     
-    }
+      });
+    const { data, fetching } = result;
+
+    useEffect(() => {
+        if (fetching) return;
+        if( JSON.stringify(data.Allcrypto) !== JSON.stringify(dataFragment)){
+            setDataFragment(data.Allcrypto)
+        }
+
+        // Set up to refetch in one second, if the query is idle
+        const timerId = setTimeout(() => {
+          reexecuteQuery({ requestPolicy: 'network-only' });
+        }, 1000);
     
+        return () => clearTimeout(timerId);
+      }, [fetching, reexecuteQuery]);
     
-    async main(){
 
-        client.query(QueryAllcrypto).toPromise().then(result => {this.setState({AllCrypto: result.data.Allcrypto})
-
-   
-    });
-      
-    }
-    async Getdata(){
-        this.state.AllCrypto.forEach(ctypto => client.query(cyptoData,{name : ctypto}).toPromise().then(result => {console.log(result.data.crypto.data[0].hcl.Close)})  )
+    return (
+        <div className="Home" id="Home">
         
-}
-    render() {
-        this.Getdata();
+        <div className="profil1e" id="profil1e">  <div className="addresscontract" id="addresscontract"></div></div>
 
-        return (
-            <div>
-                "aa"
+        <div className="contenant" id="contenant">
+        <div>
+          <Fab className="add" color="primary" aria-label="add">
+            {" "}
+            <AddIcon />
+          </Fab>
+          <div className="infinite-container">
+            <div className="search">
+              <Input
+                className="SE"
+                placeholder="Search"
+             
+              />
             </div>
-        );
-    }
+            <List
+            
+             
+            >{ dataFragment ? dataFragment.map(cyptoname => (<Cryptoli key={cyptoname} name={cyptoname} />)):<p>b</p>}</List>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
 }
 
 export default Home;
