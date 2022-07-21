@@ -1,6 +1,6 @@
 import React ,{ useState, useEffect } from "react";
 import { useQuery } from "urql";
-import { useLocation } from 'react-router-dom';
+import { useNavigate ,useParams } from 'react-router-dom';
 import { Card, Button } from "react-bootstrap";
 import Graph from "./Graph";
 
@@ -79,28 +79,28 @@ query ($name: String!){
 
 `
 function Dashbord(props:any) {
-    const [nameCypto, setNameCypto] = useState<any>();
+  const { id } = useParams()
+  
+    const [nameCypto, setNameCypto] = useState<string|any>(id);
  
     const [oldData, setOld] = useState<any>();
+    const [result, reexecuteQuery] = useQuery({
+      query: allDataCrypto,
+      variables:{name:nameCypto}
+      });
+    const { data, fetching ,error} = result;
     
 
-    const location = useLocation();
-    useEffect(() => {
-        const state  = location.state;
-        setNameCypto(state)
-   
-    }, []);
+  const navigate = useNavigate()
 
-    const [result, reexecuteQuery] = useQuery({
-        query: allDataCrypto,
-        variables:{name:nameCypto}
-    });
-    const { data, fetching } = result;
+    
     useEffect(() => {
         if (fetching ) return;
-        if(data){
-            setOld(data.crypto);
-        }
+        if(error) navigate('/')
+        if(data) setOld(data.crypto);
+        
+    
+        
         const timerId = setTimeout(() => {
 
             reexecuteQuery({requestPolicy: 'network-only'});
